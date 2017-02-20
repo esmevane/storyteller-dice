@@ -1,0 +1,5 @@
+--colors
+--growl
+--reporter spec
+--recursive
+src/**/*-spec.js
