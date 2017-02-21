@@ -45,5 +45,6 @@ module.exports = {
   envelope,
   measure,
   result,
+  perform,
   successes
 }
