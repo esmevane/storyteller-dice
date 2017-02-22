@@ -23,11 +23,29 @@ describe("Rolling a number of dice", () => {
   })
 })
 
-describe("Slicing successes", () => {
-  it("has a default target number of 7", () => {
+describe("Slicing misses", () => {
+  it("has a default target number of 8", () => {
     const roll = [7]
-    const subject = storyteller.successes(roll)
+    const subject = storyteller.miss(roll)
     const expectation = [7]
+
+    expect(subject).to.eql(expectation)
+  })
+
+  it("returns a number of dice under a target number", () => {
+    const roll = [2, 5, 8, 10]
+    const subject = storyteller.miss(roll, 8)
+    const expectation = [2, 5]
+
+    expect(subject).to.eql(expectation)
+  })
+})
+
+describe("Slicing successes", () => {
+  it("has a default target number of 8", () => {
+    const roll = [8]
+    const subject = storyteller.successes(roll)
+    const expectation = [8]
 
     expect(subject).to.eql(expectation)
   })
@@ -71,43 +89,44 @@ describe("Measuring success", () => {
   })
 })
 
-describe("Results", () => {
-  it("returns a structure describing a roll's success", () => {
-    const roll = [2, 5, 8, 10]
-    const subject = storyteller.result(roll, 7, 1)
-    const expectation = {
-      slice: [8, 10],
-      target: 7,
-      count: 2,
-      success: true,
-      difficulty: 1
-    }
+describe("Rerolls", () => {
+  it("creates a new roll of all given dice", () => {
+    const slice = [10]
+    const subject = storyteller.reroll(slice)
 
-    expect(subject).to.eql(expectation)
-  })
-
-  it("has a default target and difficulty", () => {
-    const roll = [2, 5, 8, 10]
-    const subject = storyteller.result(roll)
-    const expectation = {
-      slice: [8, 10],
-      target: 7,
-      count: 2,
-      success: true,
-      difficulty: 1
-    }
-
-    expect(subject).to.eql(expectation)
+    expect(subject.length).to.eql(slice.length)
   })
 })
 
-describe("Dice envelopes", () => {
-  it("has a basic structure", () => {
-    const roll = storyteller.dice(0)
-    const data = { dice: roll, result: storyteller.result(roll, 7, 1) }
-    const subject = storyteller.envelope(data)
-    const expectation = { type: "storyteller", data }
+describe("Rerolling against X", () => {
+  it("rerolls the amount of given dice over a default of 10", () => {
+    const slice = [8, 10]
+    const subject = storyteller.rerollAgainst(slice)
 
-    expect(subject).to.eql(expectation)
+    expect(subject.length).to.eql(1)
+  })
+
+  it("rerolls the amount of given dice over X", () => {
+    const slice = [8, 9, 10]
+    const subject = storyteller.rerollAgainst(slice, 9)
+
+    expect(subject.length).to.eql(2)
+  })
+})
+
+describe("Recursive rerolling against X", () => {
+  it("keeps rerolling", () => {
+    const slice = [10]
+    const subject = storyteller.recursivelyRerollAgainst(slice, 2)
+
+    expect(subject.length).to.be.above(slice.length)
+  })
+
+  it("tracks depth", () => {
+    const slice = [10]
+    const subject = storyteller.recursivelyRerollAgainst(slice, 2)
+    const last = subject[subject.length - 1]
+
+    expect(last.depth).to.be.above(1)
   })
 })
