@@ -74,6 +74,7 @@ const result = (
     isSafe,
     rollAgains,
     slice,
+    allDice,
     success,
     target,
     threshold

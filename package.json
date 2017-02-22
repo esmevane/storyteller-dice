@@ -1,6 +1,6 @@
 {
   "name": "storyteller-dice",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Storyteller system dice API.",
   "main": "src/index.js",
   "scripts": {
