@@ -18,65 +18,96 @@ First of all, grab the library:
 const storyteller = require("storyteller")
 ```
 
-To get just a single die:
+To perform a basic roll:
 
 ```javascript
-// A number, 1-10
-console.log(storyteller.die())
+// A Result object containing 5 dice
+
+console.log(storyteller.roll({ pool: 5 }))
 ```
 
-To get a list of dice:
+To tweak difficulty (number of successes needed, 1 by default):
 
 ```javascript
-const amount = 5
+// A Result object containing 5 dice, which succeeds over 3
 
-// A list of 5 1-10 numbers
-console.log(storyteller.dice(amount))
+console.log(storyteller.roll({ pool: 5, difficulty: 3 }))
 ```
 
-To see if a roll succeeds at a specific difficulty (default: 1):
+To tweak the target number (number you want to roll over for success, by default this number is 8):
 
 ```javascript
-const amount = 5
-const difficulty = 3
+// A Result object containing 5 dice, each dice counting as success when over 4
 
-// A boolean result
-console.log(storyteller.measure(storyteller.dice(amount), difficulty))
+console.log(storyteller.roll({ pool: 5, target: 4 }))
 ```
 
-To get a slice of successes over a target number (default 7):
+To adjust the successful reroll target ("exploding", "X-again" - if a die exceeds this number then it's rerolled, default is 10):
 
 ```javascript
-const amount = 5
-const target = 8
+// A Result object containing 5 dice, each dice exploding when over 8
 
-// A list of dice over 8
-console.log(storyteller.successes(storyteller.dice(amount), target))
+console.log(storyteller.roll({ pool: 5, explode: 8 }))
 ```
 
-To get a nice summary of a roll:
+To declare a roll as "safe" (in other words, if it's not a success, you can "try again" or reroll it, default false):
 
 ```javascript
-const amount = 5
-const target = 8
-const difficulty = 3
+// A Result object containing 5 dice, each dice rerolling if not successful
 
-// An object describing the roll and its results
-console.log(
-  storyteller.result(storyteller.dice(amount), target, difficulty)
-)
+console.log(storyteller.roll({ pool: 5, safe: true }))
 ```
 
-To just give the roller the details it needs and get a pretty JSON-API compliant envelope back:
+The roll function listens to any of the above options in any combination you like.
+
+### Roll building DSL
+
+We've also got a roll building DSL, which lets you programmatically build up a Roll object and pass that through:
 
 ```javascript
-const amount = 5
-const target = 8
-const difficulty = 3
+const { Roll } = require("storyteller-dice")
+const config =
+  new Roll()
+    .withPool(10)
+    .withDifficulty(3)
+    .withTarget(7)
+    .withExplode(8)
 
-// An envelope object describing the roll and its results
-console.log(storyteller.perform(amount, target, difficulty))
+console.log(storyteller.roll({ config, safe: true }))
 ```
+
+### The Result object
+
+A Result object is designed to give you a pleasant interface with your roll.  It has the following properties:
+
+#### `result.contents` (Array of `Die` objects)
+
+This list contains all of the Die objects and the rolls that they were made against.  Each die knows if it is successful, or if it triggered a reroll (and if so, what type of reroll).
+
+##### A `Die` object:
+
+* `die.wasSuccess()` => `boolean`
+* `die.number` => `number`
+* `die.roll` => `Roll`
+* `die.rerollReason()` => `"explode" | "safe" | "no"`
+
+By using a `Die` object's `roll` object, you can guess if it itself was part of a reroll, because often the `roll.pool` number will be smaller than asked for.  This means the `Die` was created during a smaller reroll.
+
+The internal metadata about a `Die` is kept around so that some advanced output / analytical info is available to anyone who'd like to see it.  So if (for example) you want to color the output of a die based on its success/failure, you can.  
+
+(_Note that there's a possibility that this will lead to issues if the reroll dice equal the original roll, but frequently that won't be the case - however, if it **does** become an issue, it can be resolved by including an incrementing ID on each roll._)
+
+#### `result.exploded()` (Array of `Die` objects)
+
+This list is identical to `result.contents`, except that it slices out only the dice which triggered a reroll.
+
+#### `result.safety()` (Array of `Die` objects)
+
+This list is identical to `result.contents`, except that it slices out only the dice which were part of the initial roll, which triggered a "safe" reroll.  Note that these aren't the actual dice which were rerolled, they're the dice which _resulted in a reroll_.
+
+#### `result.successes()` (Array of `Die` objects)
+
+This list is identical to `result.contents`, except that it slices out only the successful dice.
 
 ## License
 
