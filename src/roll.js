@@ -1,5 +1,9 @@
+const Id = require("./id")
+
 class Roll {
   constructor(options = {}) {
+    this.id = options.id || new Id()
+
     this.difficulty = options.difficulty
     this.explode = options.explode
     this.pool = options.pool
@@ -25,6 +29,7 @@ class Roll {
   toObject() {
     return {
       difficulty: this.difficulty,
+      id: this.id,
       explode: this.explode,
       pool: this.pool,
       safe: this.safe,

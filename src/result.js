@@ -1,5 +1,8 @@
+const Id = require("./id")
+
 class Result {
   constructor(contents = [], roll) {
+    this.id = new Id()
     this.contents = contents.filter(die => die)
     this.roll = roll
     this.length = this.contents.length
@@ -28,7 +31,11 @@ class Result {
   }
 
   concat(other) {
-    return new Result(this.contents.concat(other.contents), this.roll)
+    const next = new Result(this.contents.concat(other.contents), this.roll)
+
+    next.id = this.id
+
+    return next
   }
 }
 

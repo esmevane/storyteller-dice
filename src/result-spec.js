@@ -44,7 +44,7 @@ describe("Result", () => {
   })
 
   describe("successes", () => {
-    it("contains each success", () => {
+    it("contain each success", () => {
       const expectation = [ new Die(8, roll), new Die(10, roll) ]
 
       expect(result.successes()).to.eql(expectation)
@@ -63,6 +63,10 @@ describe("Result", () => {
 
     it("keeps the original roll", () => {
       expect(subject.roll).to.eql(result.roll)
+    })
+
+    it("preserves the original result id", () => {
+      expect(subject.id).to.eql(result.id)
     })
   })
 

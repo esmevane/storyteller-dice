@@ -12,7 +12,7 @@ describe("Dice", () => {
       .withExplode(10)
       .isSafe()
 
-  const dice = new Dice([ 1, 8, 10], roll)
+  const dice = new Dice([ 1, 8, 10 ], roll)
 
   describe("all", () => {
     it("contains the Die versions of each number", () => {
