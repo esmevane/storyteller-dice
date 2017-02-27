@@ -1,5 +1,4 @@
 const { expect } = require("chai")
-const Id = require("./id")
 const Roll = require("./roll")
 
 describe("Roll", () => {
@@ -46,10 +45,8 @@ describe("Roll", () => {
 
   describe("toObject", () => {
     it("exposes its attributes as an object", () => {
-      const id = new Id()
       const options = {
         difficulty: 2,
-        id,
         explode: 10,
         pool: 5,
         safe: false,
@@ -62,18 +59,16 @@ describe("Roll", () => {
     })
 
     it("works with gradual build-up", () => {
-      const id = new Id()
       const expectation = {
         difficulty: 2,
         explode: 10,
-        id,
         pool: 5,
         safe: false,
         target: 8
       }
 
       const subject =
-        new Roll({ id })
+        new Roll()
           .withPool(5)
           .withDifficulty(2)
           .withTarget(8)
